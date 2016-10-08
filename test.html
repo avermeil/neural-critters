@@ -20,35 +20,24 @@
 <script>
 	'use strict';
 
-	function upSpeed(){
-		speed = speed*2
-		$('#speed').val(speed)
-	}
+	
 
-	function downSpeed(){
-		if(speed > 1){
-			speed = Math.round(speed/2)
-		}
-		$('#speed').val(speed)
-	}
-
-	function setSpeed(){
-		console.log('setting speed')
-		speed = +$('#speed').val()
-	}
-
-	jQuery.fn.rotate = function(degrees) {
-	    $(this).css({'transform' : 'rotate('+ degrees +'deg)'});
-	    return $(this);
-	};
+	
 
 	var creatures = []
 	var foods = []
-
 	var render = true;
     var pause = false
 	var speed = 1;
-	
+	var ticks = 0;
+	var world = {
+		top : 50,
+		bottom : 550,
+		left : 50,
+		right : 1050
+	}
+
+
 	var createCreatures = function(){
 		_.range(0, 50).forEach(function () {
 			creatures.push(creature())
@@ -69,24 +58,22 @@
 		})
 	}
 
-	var world = {
-		top : 50,
-		bottom : 550,
-		left : 50,
-		right : 1050
+	function upSpeed(){
+		speed = speed*2
+		$('#speed').val(speed)
 	}
 
-	$(document).keypress(function(e) {
-	  if(e.which == 13) {
-	    pause = !pause
+	function downSpeed(){
+		if(speed > 1){
+			speed = Math.round(speed/2)
+		}
+		$('#speed').val(speed)
+	}
 
-	  }
-	});
-	
-	var ticks = 0;
-
-	createCreatures()
-	createFoods()
+	function setSpeed(){
+		console.log('setting speed')
+		speed = +$('#speed').val()
+	}
 
 	var isInsideWorld = function (creature) {
 	    return world.left <= creature.x && world.right >= creature.x && world.top <= creature.y && world.bottom >= creature.y;
@@ -99,11 +86,6 @@
 
 		return (min <= pos && pos <= max)
 	}
-
-	setInterval(function () {
-		console.log(ticks)
-		ticks = 0
-	}, 1000);
 
 	function tick(){
 		ticks ++;
@@ -138,6 +120,20 @@
 		}
 	}
 
+	$(document).keypress(function(e) {
+	  if(e.which == 13) {
+	    pause = !pause
+
+	  }
+	});
+
+	setInterval(function () {
+		console.log(ticks)
+		ticks = 0
+	}, 1000);
+
+	createCreatures()
+	createFoods()
 	window.requestAnimationFrame(tick);
 
 </script>
