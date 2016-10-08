@@ -5,6 +5,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.2/lodash.js"></script>
 		<script src="creature.js"></script>
 		<script src="food.js"></script>
+		<script src="neuron.js"></script>
+		<script src="layer.js"></script>
+		<script src="brain.js"></script>
 	</head>
 
 	<body>
@@ -15,14 +18,11 @@
 		<input type="number" id="speed" value="1" onchange="setSpeed()"/>
 		<button onclick="upSpeed()">faster</button>
 		<button onclick="downSpeed()">slower</button>
+		<button onclick="init()">restart</button>
 	</body>
 </html>
 <script>
 	'use strict';
-
-	
-
-	
 
 	var creatures = []
 	var foods = []
@@ -36,6 +36,13 @@
 		left : 50,
 		right : 1050
 	}
+
+	// var b = brain().init();
+
+
+	// console.log(b.think([-0.5, -0.5]))
+	// console.log('---')
+	// console.log(b.think([-0.5, 0.5]))
 
 
 	var createCreatures = function(){
@@ -87,6 +94,10 @@
 		return (min <= pos && pos <= max)
 	}
 
+	var displayTopBrain = function(){
+		console.log(creatures[0].right_track_speed)
+	}
+
 	function tick(){
 		ticks ++;
 
@@ -107,6 +118,7 @@
 		//console.log(ticks % speed)
 		if(render && ticks % speed === 0){
 			window.requestAnimationFrame(tick);
+			displayTopBrain()
 		}
 		else {
 			if(ticks % 100 === 0){
@@ -132,8 +144,16 @@
 		ticks = 0
 	}, 1000);
 
-	createCreatures()
-	createFoods()
+	function init(){
+		$('#world').empty()
+		creatures = []
+		foods = []
+		createCreatures()
+		createFoods()
+	}
+
+	init()
+	
 	window.requestAnimationFrame(tick);
 
 </script>
