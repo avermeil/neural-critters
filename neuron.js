@@ -1,22 +1,25 @@
 var neuron = function(){
 	return {
 		weights : [],
-		init : function (input_count) {
+		init : function (weights) {
 
-			this.input_count = input_count
+			this.input_count = weights.length - 1
 
+			this.weights = weights
 			//init random weights
-			_.range(input_count + 1).forEach(() => {
-				this.weights.push(this.getRandomWeight())
-			})
+			// _.range(input_count + 1).forEach(() => {
+			// 	this.weights.push(this.getRandomWeight())
+			// })
 
-			console.log(this)
+			//console.log(this)
 
 			return this
 		},
 		
 		activate : function(inputs){
 			if(inputs.length !== this.input_count){
+				console.log(inputs.length)
+				console.log(this.input_count)
 				throw 'bad input for neuron'
 			}
 

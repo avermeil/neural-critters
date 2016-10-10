@@ -2,11 +2,14 @@ var layer = function(){
 
 	return {
 		neurons : [],
-		init : function (neuron_count, input_count) {
+		init : function (neuron_count, input_count, weights) {
+
+			var chunked_weights = divideWeights(weights, neuron_count)
+
 			this.input_count = input_count
-			_.range(neuron_count).forEach(() => {
-				this.neurons.push(neuron().init(input_count))
-			})
+			_.range(neuron_count).forEach((i) => {
+				this.neurons.push(neuron().init(chunked_weights[i]))
+			}) 
 
 			return this;
 		},

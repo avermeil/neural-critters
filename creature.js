@@ -1,10 +1,10 @@
 var creature = function () {
 	return {
-		brain : brain().init(),
-		init: function () {
+		brain : brain(),
+		init: function (genome) {
 
-			this.x = 500;
-			this.y = 200;
+			this.y = Math.random() * (world.bottom - world.top) + world.top
+			this.x = Math.random() * (world.right - world.left) + world.left
 			this.speed = 1;
 			this.rotation_speed = 0.5
 			this.rotation = Math.random() * 360
@@ -14,6 +14,10 @@ var creature = function () {
 			this.fullness = 2
 			this.left_track_speed = Math.random();
 			this.right_track_speed = Math.random();
+			this.normalized_direction = {x : 1, y : 0}
+			this.genome = genome || _.range(15 + 8).map(function () {
+				return Math.random() * 2 -1
+			})
 
 			$('#world').append('<div class="creature" id="creature-'+this.id+'"><div class="eye left-eye"></div><div class="eye right-eye"></div></div>');
 
@@ -42,16 +46,24 @@ var creature = function () {
 				left : 15
 			})
 
+			this.setColor()
+
+			this.brain.init(4, 3, this.genome)
 		},
 		think : function () {
 			var food_direction = this.getClosestFoodDirection()
 
-			var outputs = this.brain.think([food_direction.x, food_direction.y])
+			var outputs = this.brain.think([
+				this.normalized_direction.x,
+				this.normalized_direction.y,
+				food_direction.x, 
+				food_direction.y
+			])
 
 			//console.log(outputs)
 
-			this.left_track_speed  = outputs[0]
-			this.right_track_speed = outputs[1]
+			this.left_track_speed  = 2 * (outputs[0] - 0.5)
+			this.right_track_speed = 2 * (outputs[1] - 0.5)
 			//inputs: 
 				//normalized vector of closest food
 
@@ -100,6 +112,13 @@ var creature = function () {
 
 			var change = [this.speed * Math.cos(angle), this.speed * Math.sin(angle)]
 
+			var distance_moved = Math.sqrt(Math.pow(change[0], 2) + Math.pow(change[1], 2))
+
+			this.normalized_direction = {
+				x : change[0] / distance_moved,
+				y : change[1] / distance_moved
+			}
+
 			this.x += change[0];
 
 			this.y += change[1]
@@ -121,7 +140,7 @@ var creature = function () {
 			if(found_food){
 				if(!this.eating){
 					this.eating = true
-					this.fullness += 0.2
+					this.fullness += 0.4
 					this.el.css({'background-color' : 'blue'})
 					found_food.beEaten()
 				}
@@ -129,7 +148,7 @@ var creature = function () {
 			}
 			else {
 				this.eating = false
-				this.el.css({'background-color' : 'pink'})
+				this.el.css({'background-color' : this.color})
 			}
 
 			this.lifetime ++;
@@ -139,6 +158,11 @@ var creature = function () {
 			this.el.remove()
 			
 			_.remove(creatures, {id : this.id})
+
+			var new_creature = creature()
+			new_creature.init()
+			creatures.push(new_creature)
+
 		},
 		getClosestFoodDirection : function(){
 			var smallest_distance = 99999999;
@@ -159,12 +183,30 @@ var creature = function () {
 				y : closest_food.y - this.y
 			}
 
+
+
 			var v = {
 				x : path_to_food.x / smallest_distance,
 				y : path_to_food.y / smallest_distance
 			}
-
+			this.path_to_food = v
 			return v
+		},
+		setColor : function() {
+			var str = ''+this.genome.join()
+		    var hash = 0;
+		    var c = '#';
+
+		    for (var i = 0; i < str.length; i++) {
+		        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		    }
+		    
+		    for (var i = 0; i < 3; i++) {
+		        var value = (hash >> (i * 8)) & 0xFF;
+		        c += ('00' + value.toString(16)).substr(-2);
+		    }
+		    console.log(c)
+		    this.color = c;
 		}
 	}
 }

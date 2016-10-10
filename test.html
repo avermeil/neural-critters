@@ -46,7 +46,7 @@
 
 
 	var createCreatures = function(){
-		_.range(0, 50).forEach(function () {
+		_.range(0, 20).forEach(function () {
 			creatures.push(creature())
 		})
 
@@ -95,7 +95,18 @@
 	}
 
 	var displayTopBrain = function(){
-		console.log(creatures[0].right_track_speed)
+		// console.log('--')
+		// console.log(creatures[0].normalized_direction)
+		// console.log(creatures[0].path_to_food)
+	}
+
+	var divideWeights = function (weights, chunk_count) {
+		if(weights.length % chunk_count !== 0){
+			console.log(weights)
+			console.log(chunk_count)
+			throw 'bad chunking mod'
+		}
+		return _.chunk(weights, weights.length / chunk_count)
 	}
 
 	function tick(){
@@ -173,7 +184,7 @@
 		position:absolute;
 		text-align:center;
 		transform: translate3d(0, 0, 0);
-		background-color:pink;
+		/*background-color:pink;*/
 		border-radius: 99px;
 		border-right:2px solid red;
 		border-top: 0px solid purple;
