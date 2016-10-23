@@ -15,6 +15,7 @@ var creature = function () {
 			this.left_track_speed = Math.random();
 			this.right_track_speed = Math.random();
 			this.normalized_direction = {x : 1, y : 0}
+
 			this.genome = genome || _.range(15 + 8).map(function () {
 				return Math.random() * 2 -1
 			})
@@ -49,6 +50,8 @@ var creature = function () {
 			this.setColor()
 
 			this.brain.init(4, 3, this.genome)
+
+			return this
 		},
 		think : function () {
 			var food_direction = this.getClosestFoodDirection()
@@ -143,8 +146,10 @@ var creature = function () {
 					this.fullness += 0.4
 					this.el.css({'background-color' : 'blue'})
 					found_food.beEaten()
+					if(Math.random() < 0.2){
+						this.reproduce()
+					}
 				}
-				
 			}
 			else {
 				this.eating = false
@@ -154,14 +159,24 @@ var creature = function () {
 			this.lifetime ++;
 
 		},
+		reproduce : function () {
+			var spawn = creature().init(_.cloneDeep(this.genome))
+			creatures.push(spawn)
+		},
 		die : function(){
 			this.el.remove()
 			
+			
+			deaders.push(this)
 			_.remove(creatures, {id : this.id})
 
-			var new_creature = creature()
-			new_creature.init()
-			creatures.push(new_creature)
+			if(creatures.length < min_creature_count){
+				var new_creature = creature()
+				new_creature.init()
+				creatures.push(new_creature)
+			}
+
+			
 
 		},
 		getClosestFoodDirection : function(){
@@ -205,7 +220,6 @@ var creature = function () {
 		        var value = (hash >> (i * 8)) & 0xFF;
 		        c += ('00' + value.toString(16)).substr(-2);
 		    }
-		    console.log(c)
 		    this.color = c;
 		}
 	}

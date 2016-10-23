@@ -19,16 +19,18 @@
 		<button onclick="upSpeed()">faster</button>
 		<button onclick="downSpeed()">slower</button>
 		<button onclick="init()">restart</button>
+		<div id="list"></div>
 	</body>
 </html>
 <script>
 	'use strict';
 
+	var min_creature_count = 20
 	var creatures = []
 	var foods = []
 	var render = true;
     var pause = false
-	var speed = 1;
+	var speed = 8;
 	var ticks = 0;
 	var world = {
 		top : 50,
@@ -36,6 +38,8 @@
 		left : 50,
 		right : 1050
 	}
+
+	var deaders = [];
 
 	// var b = brain().init();
 
@@ -109,6 +113,43 @@
 		return _.chunk(weights, weights.length / chunk_count)
 	}
 
+	getNewGenome = function () {
+		deaders = _.sortBy(deaders, 'lifetime').reverse()
+		var best = deaders.slice(0, 4)
+
+		var probs = {
+			40 : 1,
+			30 : 2,
+			20 : 3,
+			10 : 4
+		}
+
+		var level = Math.random() * 100;
+
+		_.forEach(probs, precent){
+			// if(percent)
+		}
+		
+
+		var chosen = best[probsMath.random() * 100
+	}
+
+	function updateList(){
+		var list = $('#list')
+
+		list.empty()
+
+		deaders = _.sortBy(deaders, 'lifetime').reverse()
+
+		deaders.forEach( (c, index) =>{
+			if(index > 10){
+				return
+			}
+			list.append('<div style="background-color:'+c.color+'">'+c.lifetime + '</div>')
+		})
+		//list.append('hello')
+	}
+
 	function tick(){
 		ticks ++;
 
@@ -125,11 +166,18 @@
 			creature.move();
 		});
 
+		if(ticks % 100 === 0){
+			var new_food = food()
+			new_food.init()
+			foods.push(new_food)
+		}
+
 
 		//console.log(ticks % speed)
 		if(render && ticks % speed === 0){
 			window.requestAnimationFrame(tick);
 			displayTopBrain()
+			updateList()
 		}
 		else {
 			if(ticks % 100 === 0){

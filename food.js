@@ -22,9 +22,11 @@ var food = function(){
 							
 			_.remove(foods, {id : this.id})
 
-			var new_food = food()
-			new_food.init()
-			foods.push(new_food)
+			if(foods.length === 0){
+				var new_food = food()
+				new_food.init()
+				foods.push(new_food)
+			}
 			
 		}
 	}
