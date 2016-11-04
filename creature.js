@@ -16,9 +16,35 @@ var creature = function () {
 			this.right_track_speed = Math.random();
 			this.normalized_direction = {x : 1, y : 0}
 
-			this.genome = genome || _.range(15 + 8).map(function () {
-				return Math.random() * 2 -1
-			})
+			// this.genome = genome || _.range(15 + 8).map(function () {
+			// 	return Math.random() * 2 -1
+			// })
+
+
+			this.genome = genome || [
+			-0.9479703450016617,
+			-0.43823736038569683,
+			0.9812783632247593,
+			-0.2769707825176009,
+			0.8617848118751619,
+			-0.5655879957769501,
+			0.6648068762812143,
+			-1.1813122720227747,
+			-0.9483648240771589,
+			-0.4971307165939822,
+			0.2528079832197445,
+			-0.5256207288540686,
+			-0.99650869057451,
+			0.123237416065348,
+			-0.5492978469384885,
+			0.5966743701392203,
+			-0.8691297853696548,
+			-0.3718743033909506,
+			0.4360586594755659,
+			-0.4894491174942659,
+			0.34520774666977694,
+			-0.150491952220976,
+			0.9152043251281348]
 
 			$('#world').append('<div class="creature" id="creature-'+this.id+'"><div class="eye left-eye"></div><div class="eye right-eye"></div></div>');
 
@@ -188,21 +214,23 @@ var creature = function () {
 			deaders.push(this)
 			_.remove(creatures, {id : this.id})
 
-			return
-
 			//add creature if we don't have enough
-			deaders = _.sortBy(deaders, 'lifetime').reverse()
-			var best = deaders.slice(0, 4)
+
+			if(creatures.length < min_creature_count){
+				deaders = _.sortBy(deaders, 'lifetime').reverse()
+				var best = deaders.slice(0, 4)
 
 
-			var chosen_creature = best[getWeightedRandom()]
+				var chosen_creature = best[getWeightedRandom()]
 
-			if(!chosen_creature){
-				return
+				if(!chosen_creature){
+					return
+				}
+				console.log(chosen_creature.id + ' is reporducig!')
+
+				chosen_creature.reproduce()
 			}
-			console.log(chosen_creature.id + ' is reporducig!')
-
-			chosen_creature.reproduce()
+			
 		},
 		getClosestFoodDirection : function(){
 			var smallest_distance = 99999999;
