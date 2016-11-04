@@ -94,12 +94,12 @@ var creature = function () {
 
 	        var rotation_force = this.left_track_speed - this.right_track_speed
 
-	        if(rotation_force < -5){
-	        	rotation_force = -5
-	        }
-	        if(rotation_force > 5){
-	        	rotation_force = 5
-	        }
+	        // if(rotation_force < -5){
+	        // 	rotation_force = -5
+	        // }
+	        // if(rotation_force > 5){
+	        // 	rotation_force = 5
+	        // }
 
 	        this.rotation += rotation_force;
 
@@ -146,7 +146,7 @@ var creature = function () {
 					this.fullness += 0.4
 					this.el.css({'background-color' : 'blue'})
 					found_food.beEaten()
-					if(Math.random() < 0.2){
+					if(Math.random() < 0.3){
 						this.reproduce()
 					}
 				}
@@ -160,7 +160,25 @@ var creature = function () {
 
 		},
 		reproduce : function () {
-			var spawn = creature().init(_.cloneDeep(this.genome))
+
+			//copy genome
+
+
+
+			var max_mutation = 0.3
+
+	        var new_genome = this.genome.map(function (weight) {
+	       		if(Math.random() < 0.2){
+	       			return weight += _.random(-max_mutation, max_mutation)
+	       		}
+	       		return weight
+	        })
+
+	        if(Math.random() < 0.1){
+	        	console.log('this is a random craeture.')
+	        	new_genome = null
+	        }
+			var spawn = creature().init(new_genome)
 			creatures.push(spawn)
 		},
 		die : function(){
@@ -170,14 +188,21 @@ var creature = function () {
 			deaders.push(this)
 			_.remove(creatures, {id : this.id})
 
-			if(creatures.length < min_creature_count){
-				var new_creature = creature()
-				new_creature.init()
-				creatures.push(new_creature)
+			return
+
+			//add creature if we don't have enough
+			deaders = _.sortBy(deaders, 'lifetime').reverse()
+			var best = deaders.slice(0, 4)
+
+
+			var chosen_creature = best[getWeightedRandom()]
+
+			if(!chosen_creature){
+				return
 			}
+			console.log(chosen_creature.id + ' is reporducig!')
 
-			
-
+			chosen_creature.reproduce()
 		},
 		getClosestFoodDirection : function(){
 			var smallest_distance = 99999999;
@@ -208,19 +233,12 @@ var creature = function () {
 			return v
 		},
 		setColor : function() {
-			var str = ''+this.genome.join()
-		    var hash = 0;
-		    var c = '#';
+			var sum_of_genome = _.sum(this.genome)
 
-		    for (var i = 0; i < str.length; i++) {
-		        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-		    }
+			var hex = sum_of_genome.toString(16).split('.').join('').replace('-', '').slice(0, 6)
+			
 		    
-		    for (var i = 0; i < 3; i++) {
-		        var value = (hash >> (i * 8)) & 0xFF;
-		        c += ('00' + value.toString(16)).substr(-2);
-		    }
-		    this.color = c;
+		    this.color = '#'+hex;
 		}
 	}
 }

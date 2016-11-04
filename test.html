@@ -113,26 +113,34 @@
 		return _.chunk(weights, weights.length / chunk_count)
 	}
 
-	getNewGenome = function () {
-		deaders = _.sortBy(deaders, 'lifetime').reverse()
-		var best = deaders.slice(0, 4)
 
-		var probs = {
-			40 : 1,
-			30 : 2,
-			20 : 3,
-			10 : 4
-		}
 
-		var level = Math.random() * 100;
-
-		_.forEach(probs, precent){
-			// if(percent)
-		}
+	var getNewGenome = function () {
 		
 
-		var chosen = best[probsMath.random() * 100
+
+			// if(percent)
+		
+		
+
+		//var chosen = best[probsMath.random() * 100
 	}
+
+	var getWeightedRandom = function () {
+		var level = Math.random() * 100;
+
+		if(level < 40){
+			return 0
+		}
+		if(level < 70){
+			return 1
+		}
+		if(level < 90){
+			return 2
+		}
+		return 3
+	}
+
 
 	function updateList(){
 		var list = $('#list')
@@ -145,7 +153,7 @@
 			if(index > 10){
 				return
 			}
-			list.append('<div style="background-color:'+c.color+'">'+c.lifetime + '</div>')
+			list.append('<div style="background-color:'+c.color+'">'+c.id+' '+c.lifetime + '</div>')
 		})
 		//list.append('hello')
 	}
@@ -168,7 +176,7 @@
 
 		if(ticks % 100 === 0){
 			var new_food = food()
-			new_food.init()
+			new_food.init() 
 			foods.push(new_food)
 		}
 
@@ -180,7 +188,7 @@
 			updateList()
 		}
 		else {
-			if(ticks % 100 === 0){
+			if(ticks % 500 === 0){
 				setTimeout(function () {
 					tick()
 				})
@@ -199,7 +207,6 @@
 	});
 
 	setInterval(function () {
-		console.log(ticks)
 		ticks = 0
 	}, 1000);
 
