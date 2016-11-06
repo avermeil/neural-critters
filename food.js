@@ -22,11 +22,11 @@ var food = function(){
 							
 			_.remove(foods, {id : this.id})
 
-			if(foods.length === 0){
+			//if(foods.length < min_food_count){
 				var new_food = food()
 				new_food.init()
 				foods.push(new_food)
-			}
+			//}
 			
 		}
 	}

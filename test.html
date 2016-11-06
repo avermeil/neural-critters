@@ -25,7 +25,8 @@
 <script>
 	'use strict';
 
-	var min_creature_count = 3
+	var min_creature_count = 10
+	var max_creatures_count = 10
 	var creatures = []
 	var foods = []
 	var render = true;
@@ -34,9 +35,9 @@
 	var ticks = 0;
 	var world = {
 		top : 50,
-		bottom : 550,
+		bottom : 1050,
 		left : 50,
-		right : 1050
+		right : 1450
 	}
 
 	var deaders = [];
@@ -55,6 +56,31 @@
 		})
 
 		creatures.forEach(function (creature) {
+			// creature.init([
+			// 	0.6921789833143186,
+			// 	-0.22831344359313815,
+			// 	-0.8821268525927508,
+			// 	-0.37553844498407934,
+			// 	0.4279130673678768,
+			// 	-0.9445866238241514,
+			// 	-0.5805577514188025,
+			// 	1.1716568659530626,
+			// 	0.80080370177231,
+			// 	-0.8193418229249316,
+			// 	0.23826398630716794,
+			// 	0.009636419726103629,
+			// 	-0.11236171271643106,
+			// 	-0.46834217327834216,
+			// 	-0.045574165095192576,
+			// 	-0.919449100034444,
+			// 	1.1349169252138636,
+			// 	-0.2970742515896361,
+			// 	-0.21445604764329318,
+			// 	0.26344006624565436,
+			// 	-0.10616269778173312,
+			// 	-0.8528644147737722,
+			// 	-0.7131952089565017
+			// ])
 			creature.init()
 		})
 	}
@@ -147,8 +173,6 @@
 
 		list.empty()
 
-		deaders = _.sortBy(deaders, 'lifetime').reverse()
-
 		deaders.forEach( (c, index) =>{
 			if(index > 10){
 				return
@@ -172,13 +196,17 @@
 		creatures.forEach(function (creature) {
 			creature.think();
 			creature.move();
+			creature.el.css('borderleft', 'none')
+
 		});
 
-		if(ticks % 100 === 0){
-			var new_food = food()
-			new_food.init() 
-			foods.push(new_food)
-		}
+		_.max(creatures, 'lifetime').el.css('border-left', 'solid orange 10px')
+
+		// if(ticks % 100 === 0){
+		// 	var new_food = food()
+		// 	new_food.init() 
+		// 	foods.push(new_food)
+		// }
 
 
 		//console.log(ticks % speed)
@@ -230,8 +258,8 @@
 	#world {
 		background-color:lightblue;
 		margin:50px;
-		width:1000px;
-		height:500px;
+		width:1400px;
+		height:1000px;
 		background-size: 25px 25px;
 	    background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
 	}

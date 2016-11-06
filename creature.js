@@ -16,35 +16,9 @@ var creature = function () {
 			this.right_track_speed = Math.random();
 			this.normalized_direction = {x : 1, y : 0}
 
-			// this.genome = genome || _.range(15 + 8).map(function () {
-			// 	return Math.random() * 2 -1
-			// })
-
-
-			this.genome = genome || [
-			-0.9479703450016617,
-			-0.43823736038569683,
-			0.9812783632247593,
-			-0.2769707825176009,
-			0.8617848118751619,
-			-0.5655879957769501,
-			0.6648068762812143,
-			-1.1813122720227747,
-			-0.9483648240771589,
-			-0.4971307165939822,
-			0.2528079832197445,
-			-0.5256207288540686,
-			-0.99650869057451,
-			0.123237416065348,
-			-0.5492978469384885,
-			0.5966743701392203,
-			-0.8691297853696548,
-			-0.3718743033909506,
-			0.4360586594755659,
-			-0.4894491174942659,
-			0.34520774666977694,
-			-0.150491952220976,
-			0.9152043251281348]
+			this.genome = genome || _.range(15 + 8).map(function () {
+				return Math.random() * 2 -1
+			})
 
 			$('#world').append('<div class="creature" id="creature-'+this.id+'"><div class="eye left-eye"></div><div class="eye right-eye"></div></div>');
 
@@ -116,7 +90,7 @@ var creature = function () {
 				'border-bottom-width' : Math.abs(this.right_track_speed)
 			})
 
-	        this.speed = (this.left_track_speed + this.right_track_speed)
+	        this.speed = (Math.abs(this.left_track_speed) + Math.abs(this.right_track_speed))
 
 	        var rotation_force = this.left_track_speed - this.right_track_speed
 
@@ -152,12 +126,26 @@ var creature = function () {
 
 			this.y += change[1]
 
-			this.fullness = this.fullness - 0.0005 - (Math.abs(this.speed) * 0.0005)
+			this.fullness = this.fullness - 0.0003 - (Math.abs(this.speed) * 0.0005)
 
-
-			if(!isInsideWorld(this)){
-				this.rotation += 180
+			if(this.x < world.left ){
+				//this.x = world.left
+				this.x = this.x + (world.right - world.left )
 			}
+
+			if(this.x > world.right ){
+				//this.x = world.right
+				this.x = this.x - (world.right - world.left )
+			}
+			if(this.y < world.top ){
+				//this.y = world.top
+				this.y = this.y + (world.bottom - world.top )
+			}
+			if(this.y > world.bottom ){
+				//this.y = world.bottom
+				this.y = this.y - (world.bottom - world.top )
+			}
+
 
 			this.el.css({transform : 'translate3d('+this.x+'px, '+this.y+'px, 0) rotate('+ this.rotation +'deg) scale('+this.fullness+')'})
 			
@@ -173,7 +161,7 @@ var creature = function () {
 					this.el.css({'background-color' : 'blue'})
 					found_food.beEaten()
 					if(Math.random() < 0.3){
-						this.reproduce()
+						//this.reproduce()
 					}
 				}
 			}
@@ -189,12 +177,17 @@ var creature = function () {
 
 			//copy genome
 
-
+			if(creatures.length >= max_creatures_count){
+				return
+			}
 
 			var max_mutation = 0.3
 
 	        var new_genome = this.genome.map(function (weight) {
-	       		if(Math.random() < 0.2){
+	        	if(Math.random() < 0.05){
+	        		return Math.random() * 2 -1
+	        	}
+	       		else if(Math.random() < 0.2){
 	       			return weight += _.random(-max_mutation, max_mutation)
 	       		}
 	       		return weight
@@ -210,27 +203,34 @@ var creature = function () {
 		die : function(){
 			this.el.remove()
 			
-			
 			deaders.push(this)
+
+			deaders = _.sortBy(deaders, 'lifetime')
+
+			deaders.reverse()
+
+			deaders = deaders.slice(0, 500)
+
 			_.remove(creatures, {id : this.id})
 
 			//add creature if we don't have enough
 
-			if(creatures.length < min_creature_count){
-				deaders = _.sortBy(deaders, 'lifetime').reverse()
-				var best = deaders.slice(0, 4)
-
-
-				var chosen_creature = best[getWeightedRandom()]
-
-				if(!chosen_creature){
-					return
-				}
-				console.log(chosen_creature.id + ' is reporducig!')
-
-				chosen_creature.reproduce()
+			if(creatures.length > min_creature_count){
+				return
 			}
-			
+
+			var total = deaders.length
+			var genomes = _(deaders).map(function(c, index){
+				return _.times(total-index, function(){
+					return c
+				})
+			}).flatten().valueOf()
+
+			var chosen_creature = genomes[_.random(0, genomes.length -1)]
+
+			console.log(chosen_creature.id + ' is reporducig!')
+
+			chosen_creature.reproduce()
 		},
 		getClosestFoodDirection : function(){
 			var smallest_distance = 99999999;
